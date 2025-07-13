@@ -1,35 +1,73 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+interface Cell {
+  isAlive: boolean;
+}
+
+interface CellProps {
+  cell: Cell;
+  onCellClick: () => void;
+}
+
+function CellComponent({ cell, onCellClick }: CellProps) {
+  return (
+    <button
+      className="cell"
+      onClick={onCellClick}
+    >
+      {cell.isAlive}
+    </button>
+  );
+}
+
+type Grid = Cell[][];
+
+interface GridProps {
+  grid: Grid;
+}
+
+function GridComponent({ grid }: GridProps) {
+  function handleClick(x: number, y: number) {
+    grid[x][y].isAlive = !grid[x][y].isAlive;
+    console.log("Cell (" + x + ", " + y + ") is ", grid[x][y].isAlive);
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="grid-row">
+        <CellComponent cell={grid[0][0]} onCellClick={() => handleClick(0, 0)} />
+        <CellComponent cell={grid[0][1]} onCellClick={() => handleClick(0, 1)} />
+        <CellComponent cell={grid[0][2]} onCellClick={() => handleClick(0, 2)} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className="grid-row">
+        <CellComponent cell={grid[1][0]} onCellClick={() => handleClick(1, 0)} />
+        <CellComponent cell={grid[1][1]} onCellClick={() => handleClick(1, 1)} />
+        <CellComponent cell={grid[1][2]} onCellClick={() => handleClick(1, 2)} />
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className="grid-row">
+        <CellComponent cell={grid[2][0]} onCellClick={() => handleClick(2, 0)} />
+        <CellComponent cell={grid[2][1]} onCellClick={() => handleClick(2, 1)} />
+        <CellComponent cell={grid[2][2]} onCellClick={() => handleClick(2, 2)} />
+      </div>
+      <div className="status"></div>
     </>
-  )
+  );
 }
 
-export default App
+export default function Game() {
+const gameGrid: Grid = [
+  [{ isAlive: false }, { isAlive: false }, { isAlive: false }],
+  [{ isAlive: false }, { isAlive: false }, { isAlive: false }],
+  [{ isAlive: false }, { isAlive: false }, { isAlive: false }]
+];
+  return (
+    <div className="game">
+      <div className="game-grid">
+        <GridComponent grid={gameGrid} />
+      </div>
+      <div className="game-info">
+        <p>Game Info:</p>
+      </div>
+    </div>
+  )
+}
