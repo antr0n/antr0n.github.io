@@ -34,32 +34,27 @@ function GridComponent({ grid }: GridProps) {
 
   return (
     <>
-      <div className="grid-row">
-        <CellComponent cell={grid[0][0]} onCellClick={() => handleClick(0, 0)} />
-        <CellComponent cell={grid[0][1]} onCellClick={() => handleClick(0, 1)} />
-        <CellComponent cell={grid[0][2]} onCellClick={() => handleClick(0, 2)} />
+    {grid.map((row, rowIndex) => (
+      <div key={rowIndex} className="grid-row">
+        {row.map((cell, colIndex) => (
+          <CellComponent
+            key={`${rowIndex}-${colIndex}`}
+            cell={cell}
+            onCellClick={() => handleClick(rowIndex, colIndex)}
+            />
+        ))}
       </div>
-      <div className="grid-row">
-        <CellComponent cell={grid[1][0]} onCellClick={() => handleClick(1, 0)} />
-        <CellComponent cell={grid[1][1]} onCellClick={() => handleClick(1, 1)} />
-        <CellComponent cell={grid[1][2]} onCellClick={() => handleClick(1, 2)} />
-      </div>
-      <div className="grid-row">
-        <CellComponent cell={grid[2][0]} onCellClick={() => handleClick(2, 0)} />
-        <CellComponent cell={grid[2][1]} onCellClick={() => handleClick(2, 1)} />
-        <CellComponent cell={grid[2][2]} onCellClick={() => handleClick(2, 2)} />
-      </div>
-      <div className="status"></div>
+    ))}
+    <div className="status"></div>
     </>
   );
 }
 
 export default function Game() {
-const gameGrid: Grid = [
-  [{ isAlive: false }, { isAlive: false }, { isAlive: false }],
-  [{ isAlive: false }, { isAlive: false }, { isAlive: false }],
-  [{ isAlive: false }, { isAlive: false }, { isAlive: false }]
-];
+  const gridHeight = 32;
+  const gridWidth = 32;
+  const gameGrid: Grid = Array(gridHeight).fill(null).map(() => Array(gridWidth).fill(null).map(() => ({ isAlive: false })));
+
   return (
     <div className="game">
       <div className="game-grid">
