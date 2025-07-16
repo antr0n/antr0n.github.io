@@ -112,6 +112,10 @@ export default function Game() {
     });
   };
 
+  const clearGrid = () => {
+    setGrid(initialGrid);
+  };
+
   return (
     <div className="game">
       <div className="game-grid">
@@ -124,6 +128,10 @@ export default function Game() {
         <br></br>
         <button onClick={computeNextGeneration}>
           Next Generation
+        </button>
+        <br></br>
+        <button onClick={clearGrid}>
+          Clear
         </button>
       </div>
     </div>
