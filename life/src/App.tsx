@@ -49,12 +49,30 @@ function GridComponent({ grid, onCellClick }: GridProps) {
 }
 
 export default function Game() {
-  const gridHeight = 32;
-  const gridWidth = 32;
-  const interval = 250; // Interval for the game loop in milliseconds
-  const initialGrid: Grid = Array(gridHeight).fill(null).map(() => Array(gridWidth).fill(null).map(() => ({ isAlive: false })));
-  const [grid, setGrid] = useState<Grid>(initialGrid);
+  const [gridHeight, setGridHeight] = useState(32);
+  const [gridWidth, setGridWidth] = useState(32);
+  const [interval, setInterval] = useState(250); // Interval for the game loop in milliseconds
+
+  const createInitialGrid = (height: number, width: number): Grid => {
+    return Array(height)
+    .fill(null)
+    .map(() => Array(width)
+    .fill(null)
+    .map(() => ({ isAlive: false })));
+  };
+
+  const [grid, setGrid] = useState<Grid>(() => createInitialGrid(gridHeight, gridWidth));
   const [isRunning, setIsRunning] = useState<boolean>(false);
+
+  const handleSizeChange = (newHeight: number, newWidth: number) => {
+    setGridHeight(newHeight);
+    setGridWidth(newWidth);
+    setGrid(createInitialGrid(newHeight, newWidth));
+  };
+
+  const handleIntervalChange = (newInterval: number) => {
+    setInterval(newInterval);
+  };
   
   const computeNextGeneration = useCallback(() => {
     setGrid(currentGrid => {
@@ -113,7 +131,7 @@ export default function Game() {
   };
 
   const clearGrid = () => {
-    setGrid(initialGrid);
+    setGrid(() => createInitialGrid(gridHeight, gridWidth));
   };
 
   return (
@@ -121,7 +139,37 @@ export default function Game() {
       <div className="game-grid">
         <GridComponent grid={grid} onCellClick={handleCellClick} />
       </div>
-      <div className="game-info">
+      <div className="game-controls">
+        <label>
+          Height:
+          <input
+            type="number"
+            value={gridHeight}
+            onChange={(e) => handleSizeChange(parseInt(e.target.value), gridWidth)}
+            min="1"
+            max="100"
+          />
+        </label>
+        <label>
+          Width:
+          <input
+            type="number"
+            value={gridWidth}
+            onChange={(e) => handleSizeChange(gridHeight, parseInt(e.target.value))}
+            min="1"
+            max="100"
+          />
+        </label>
+        <label>
+          Step Interval:
+          <input
+            type="number"
+            value={interval}
+            onChange={(e) => handleIntervalChange(parseInt(e.target.value))}
+            min="1"
+            max="1000"
+          />
+        </label>
         <button onClick={() => setIsRunning(!isRunning)}>
           {isRunning ? 'Stop' : 'Start'}
         </button>
