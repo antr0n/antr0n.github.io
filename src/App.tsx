@@ -54,11 +54,19 @@ export default function Game() {
   const [interval, setInterval] = useState(250); // Interval for the game loop in milliseconds
 
   const createInitialGrid = (height: number, width: number): Grid => {
-    return Array(height)
+    const initialGrid: Grid = Array(height)
     .fill(null)
     .map(() => Array(width)
     .fill(null)
     .map(() => ({ isAlive: false })));
+
+    initialGrid[10][12].isAlive = true;
+    initialGrid[11][13].isAlive = true;
+    initialGrid[12][11].isAlive = true;
+    initialGrid[12][12].isAlive = true;
+    initialGrid[12][13].isAlive = true;
+    
+    return initialGrid;
   };
 
   const [grid, setGrid] = useState<Grid>(() => createInitialGrid(gridHeight, gridWidth));
