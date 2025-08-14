@@ -52,14 +52,14 @@ export default function Game() {
   const [gridHeight, setGridHeight] = useState(32);
   const [gridWidth, setGridWidth] = useState(32);
   const [interval, setInterval] = useState(250); // Interval for the game loop in milliseconds
-
+  
   const createInitialGrid = (height: number, width: number): Grid => {
     const initialGrid: Grid = Array(height)
     .fill(null)
     .map(() => Array(width)
     .fill(null)
     .map(() => ({ isAlive: false })));
-
+    
     initialGrid[10][12].isAlive = true;
     initialGrid[11][13].isAlive = true;
     initialGrid[12][11].isAlive = true;
@@ -68,10 +68,10 @@ export default function Game() {
     
     return initialGrid;
   };
-
+  
   const [grid, setGrid] = useState<Grid>(() => createInitialGrid(gridHeight, gridWidth));
   const [isRunning, setIsRunning] = useState<boolean>(false);
-
+  
   const handleSizeChange = (newHeight: number, newWidth: number) => {
     setGridHeight(newHeight);
     setGridWidth(newWidth);
@@ -139,7 +139,13 @@ export default function Game() {
   };
 
   const clearGrid = () => {
-    setGrid(() => createInitialGrid(gridHeight, gridWidth));
+    const deadGrid: Grid = Array(gridWidth)
+    .fill(null)
+    .map(() => Array(gridHeight)
+    .fill(null)
+    .map(() => ({ isAlive: false })));
+
+    setGrid(deadGrid);
   };
 
   return (
