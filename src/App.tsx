@@ -7,18 +7,20 @@ interface Cell {
 interface CellProps {
   cell: Cell;
   onCellClick: () => void;
+  size: number;
 }
 
-function CellComponent({ cell, onCellClick }: CellProps) {
+function CellComponent({ cell, onCellClick, size }: CellProps) {
   return (
     <button
       className="cell"
       onClick={onCellClick}
       style={{
-        background: cell.isAlive ? 'black' : 'white'
+        background: cell.isAlive ? 'black' : 'white',
+        width: `${size}px`,
+        height: `${size}px`
       }}
     >
-      {cell.isAlive}
     </button>
   );
 }
@@ -28,9 +30,10 @@ type Grid = Cell[][];
 interface GridProps {
   grid: Grid;
   onCellClick: (x: number, y: number) => void;
+  cellSize: number;
 }
 
-function GridComponent({ grid, onCellClick }: GridProps) {
+function GridComponent({ grid, onCellClick, cellSize }: GridProps) {
   return (
     <>
     {grid.map((row, rowIndex) => (
@@ -40,7 +43,8 @@ function GridComponent({ grid, onCellClick }: GridProps) {
             key={`${rowIndex}-${colIndex}`}
             cell={cell}
             onCellClick={() => onCellClick(rowIndex, colIndex)}
-            />
+            size={cellSize}
+          />
         ))}
       </div>
     ))}
@@ -52,26 +56,31 @@ export default function Game() {
   const [gridHeight, setGridHeight] = useState(32);
   const [gridWidth, setGridWidth] = useState(32);
   const [interval, setInterval] = useState(250); // Interval for the game loop in milliseconds
-  
+  const [cellSize, setCellSize] = useState(35);
+
+  const handleScaleChange = (newSize: number) => {
+    setCellSize(Math.max(5, Math.min(100, newSize))); // Limit size between 5 and 100 pixels
+  };
+
   const createInitialGrid = (height: number, width: number): Grid => {
     const initialGrid: Grid = Array(height)
-    .fill(null)
-    .map(() => Array(width)
-    .fill(null)
-    .map(() => ({ isAlive: false })));
-    
+      .fill(null)
+      .map(() => Array(width)
+        .fill(null)
+        .map(() => ({ isAlive: false })));
+
     initialGrid[10][12].isAlive = true;
     initialGrid[11][13].isAlive = true;
     initialGrid[12][11].isAlive = true;
     initialGrid[12][12].isAlive = true;
     initialGrid[12][13].isAlive = true;
-    
+
     return initialGrid;
   };
-  
+
   const [grid, setGrid] = useState<Grid>(() => createInitialGrid(gridHeight, gridWidth));
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  
+
   const handleSizeChange = (newHeight: number, newWidth: number) => {
     setGridHeight(newHeight);
     setGridWidth(newWidth);
@@ -81,7 +90,7 @@ export default function Game() {
   const handleIntervalChange = (newInterval: number) => {
     setInterval(newInterval);
   };
-  
+
   const computeNextGeneration = useCallback(() => {
     setGrid(currentGrid => {
       const newGrid = currentGrid.map(row => row.map(cell => ({ ...cell })));
@@ -140,10 +149,10 @@ export default function Game() {
 
   const clearGrid = () => {
     const deadGrid: Grid = Array(gridWidth)
-    .fill(null)
-    .map(() => Array(gridHeight)
-    .fill(null)
-    .map(() => ({ isAlive: false })));
+      .fill(null)
+      .map(() => Array(gridHeight)
+        .fill(null)
+        .map(() => ({ isAlive: false })));
 
     setGrid(deadGrid);
   };
@@ -172,6 +181,16 @@ export default function Game() {
           />
         </label>
         <label>
+          Scale:
+          <input
+            type="number"
+            value={cellSize}
+            onChange={(e) => handleScaleChange(parseInt(e.target.value))}
+            min="5"
+            max="100"
+          />
+        </label>
+        <label>
           Step Interval:
           <input
             type="number"
@@ -192,7 +211,11 @@ export default function Game() {
         </button>
       </div>
       <div className="game-grid">
-        <GridComponent grid={grid} onCellClick={handleCellClick} />
+        <GridComponent
+          grid={grid}
+          onCellClick={handleCellClick}
+          cellSize={cellSize}
+        />
       </div>
     </div>
   )
