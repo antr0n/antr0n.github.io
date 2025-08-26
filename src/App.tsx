@@ -150,9 +150,6 @@ export default function Game() {
 
   return (
     <div className="game">
-      <div className="game-grid">
-        <GridComponent grid={grid} onCellClick={handleCellClick} />
-      </div>
       <div className="game-controls">
         <label>
           Height:
@@ -184,17 +181,18 @@ export default function Game() {
             max="1000"
           />
         </label>
-        <button onClick={() => setIsRunning(!isRunning)}>
-          {isRunning ? 'Stop' : 'Start'}
-        </button>
-        <br></br>
         <button onClick={computeNextGeneration}>
           Next Generation
         </button>
-        <br></br>
         <button onClick={clearGrid}>
           Clear
         </button>
+        <button onClick={() => setIsRunning(!isRunning)}>
+          {isRunning ? 'Stop' : 'Start'}
+        </button>
+      </div>
+      <div className="game-grid">
+        <GridComponent grid={grid} onCellClick={handleCellClick} />
       </div>
     </div>
   )
