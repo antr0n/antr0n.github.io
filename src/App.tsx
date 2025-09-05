@@ -95,8 +95,11 @@ export default function Game() {
 
   const computeNextGeneration = useCallback(() => {
     setGrid(currentGrid => {
-      const newGrid = currentGrid.map(row => row.map(cell => ({ ...cell })));
+      // First, calculate all new states without creating objects
+      const newStates: boolean[][] = Array(gridHeight).fill(null)
+        .map(() => Array(gridWidth).fill(false));
 
+      // Calculate new states
       for (let x = 0; x < gridHeight; x++) {
         for (let y = 0; y < gridWidth; y++) {
           let neighbors = 0;
@@ -104,26 +107,34 @@ export default function Game() {
           // Count live neighbors
           for (let dx = -1; dx <= 1; dx++) {
             for (let dy = -1; dy <= 1; dy++) {
-              if (dx === 0 && dy === 0) continue; // Skip the cell itself
-
+              if (dx === 0 && dy === 0) continue;
               const nx = x + dx;
               const ny = y + dy;
-
               if (nx >= 0 && nx < gridHeight && ny >= 0 && ny < gridWidth) {
                 if (currentGrid[nx][ny].isAlive) neighbors++;
               }
             }
           }
 
-          if (currentGrid[x][y].isAlive) { // Death
-            newGrid[x][y].isAlive = neighbors === 2 || neighbors === 3;
-          } else { // Birth
-            newGrid[x][y].isAlive = neighbors === 3;
-          }
+          // Store new state
+          newStates[x][y] = currentGrid[x][y].isAlive ?
+            (neighbors === 2 || neighbors === 3) :
+            (neighbors === 3);
         }
       }
 
-      return newGrid;
+      // Create new objects only where needed
+      return currentGrid.map((row, x) => {
+        let rowChanged = false;
+        const newRow = row.map((cell, y) => {
+          if (cell.isAlive !== newStates[x][y]) {
+            rowChanged = true;
+            return { isAlive: newStates[x][y] };
+          }
+          return cell;
+        });
+        return rowChanged ? newRow : row;
+      });
     });
   }, [gridHeight, gridWidth]);
 
