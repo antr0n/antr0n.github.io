@@ -156,6 +156,20 @@ export default function Game() {
 
     setGrid(deadGrid);
   };
+  
+  const randomizeGrid = () => {
+    setGrid(currentGrid => {
+      const randomGrid = currentGrid.map(row => row.map(cell => ({ ...cell })));
+      for (let x = 0; x < gridWidth; x++) {
+        for (let y = 0; y < gridHeight; y++) {
+          if (!randomGrid[x][y].isAlive) {
+            if (Math.random() > 0.5) randomGrid[x][y].isAlive = true
+          }
+        }
+      }
+      return randomGrid;
+    });
+  };
 
   return (
     <div className="game">
@@ -205,6 +219,9 @@ export default function Game() {
         </button>
         <button onClick={clearGrid}>
           Clear
+        </button>
+        <button onClick={randomizeGrid}>
+          Randomize
         </button>
         <button onClick={() => setIsRunning(!isRunning)}>
           {isRunning ? 'Stop' : 'Start'}
