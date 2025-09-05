@@ -36,18 +36,18 @@ interface GridProps {
 function GridComponent({ grid, onCellClick, cellSize }: GridProps) {
   return (
     <>
-    {grid.map((row, rowIndex) => (
-      <div key={rowIndex} className="grid-row">
-        {row.map((cell, colIndex) => (
-          <CellComponent
-            key={`${rowIndex}-${colIndex}`}
-            cell={cell}
-            onCellClick={() => onCellClick(rowIndex, colIndex)}
-            size={cellSize}
-          />
-        ))}
-      </div>
-    ))}
+      {grid.map((row, rowIndex) => (
+        <div key={rowIndex} className="grid-row">
+          {row.map((cell, colIndex) => (
+            <CellComponent
+              key={`${rowIndex}-${colIndex}`}
+              cell={cell}
+              onCellClick={() => onCellClick(rowIndex, colIndex)}
+              size={cellSize}
+            />
+          ))}
+        </div>
+      ))}
     </>
   );
 }
@@ -128,15 +128,26 @@ export default function Game() {
   }, [gridHeight, gridWidth]);
 
   useEffect(() => {
-    let intervalId: number;
+    let frameId: number;
+    let lastUpdate = 0;
+
+    const updateGame = (timestamp: number) => {
+      if (isRunning) {
+        if (timestamp - lastUpdate >= interval) {
+          computeNextGeneration();
+          lastUpdate = timestamp;
+        }
+        frameId = requestAnimationFrame(updateGame);
+      }
+    };
 
     if (isRunning) {
-      intervalId = window.setInterval(computeNextGeneration, interval);
+      frameId = requestAnimationFrame(updateGame);
     }
 
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
+      if (frameId) {
+        cancelAnimationFrame(frameId);
       }
     };
   }, [isRunning, computeNextGeneration, interval]);
@@ -158,7 +169,7 @@ export default function Game() {
 
     setGrid(deadGrid);
   };
-  
+
   const randomizeGrid = () => {
     setGrid(currentGrid => {
       const randomGrid = currentGrid.map(row => row.map(cell => ({ ...cell })));
