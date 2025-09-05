@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 
 interface Cell {
   isAlive: boolean;
@@ -10,7 +10,7 @@ interface CellProps {
   size: number;
 }
 
-function CellComponent({ cell, onCellClick, size }: CellProps) {
+const CellComponent = memo(({ cell, onCellClick, size }: CellProps) => {
   return (
     <button
       className="cell"
@@ -23,7 +23,7 @@ function CellComponent({ cell, onCellClick, size }: CellProps) {
     >
     </button>
   );
-}
+});
 
 type Grid = Cell[][];
 
