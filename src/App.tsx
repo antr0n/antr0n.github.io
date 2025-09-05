@@ -82,9 +82,11 @@ export default function Game() {
   const [isRunning, setIsRunning] = useState<boolean>(false);
 
   const handleSizeChange = (newHeight: number, newWidth: number) => {
-    setGridHeight(newHeight);
-    setGridWidth(newWidth);
-    setGrid(createInitialGrid(newHeight, newWidth));
+    const clampedHeight = Math.max(1, Math.min(100, newHeight));
+    const clampedWidth = Math.max(1, Math.min(100, newWidth));
+    setGridHeight(clampedHeight);
+    setGridWidth(clampedWidth);
+    setGrid(createInitialGrid(clampedHeight, clampedWidth));
   };
 
   const handleIntervalChange = (newInterval: number) => {
